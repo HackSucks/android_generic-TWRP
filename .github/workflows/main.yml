@@ -69,7 +69,7 @@ jobs:
           git clone https://github.com/HackSucks/android_generic-TWRP.git \
             -b twrp-13 \
             --depth=1 \
-            device/android/generic
+            device/android/twgeneric
 
       - name: Set build version name
         run: |
@@ -82,7 +82,7 @@ jobs:
           export ALLOW_MISSING_DEPENDENCIES=true
           export USE_CCACHE=1
           source build/envsetup.sh
-          lunch omni_generic-eng
+          lunch twrp_twgeneric-eng
           mka vendorbootimage 2>&1 | tee build.log
 
       - name: Locate build output
