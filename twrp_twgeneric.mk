@@ -13,10 +13,10 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, vendor/twrp/config/common.mk)
 
 # Inherit from generic device
-$(call inherit-product, device/android/generic/device.mk)
+$(call inherit-product, device/android/twgeneric/device.mk)
 
-PRODUCT_DEVICE := generic
-PRODUCT_NAME := omni_generic
+PRODUCT_DEVICE := twgeneric
+PRODUCT_NAME := omni_twgeneric
 PRODUCT_BRAND := Android
 PRODUCT_MODEL := mainline
 PRODUCT_MANUFACTURER := android
