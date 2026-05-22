@@ -8,7 +8,7 @@
 
 set -e
 
-DEVICE=generic
+DEVICE=twgeneric
 VENDOR=android
 
 # Load extract_utils and do some sanity checks
