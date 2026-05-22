@@ -95,7 +95,7 @@ jobs:
           git clone https://github.com/HackSucks/android_generic-TWRP.git \
             -b twrp-13 \
             --depth=1 \
-            device/generic/generic
+            device/android/generic
 
       - name: Set build version name
         run: |
