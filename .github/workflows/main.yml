@@ -16,7 +16,27 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+      - name: Handle workspace state
+        run: |
+          TWRP_DIR="$GITHUB_WORKSPACE/twrp"
+          IMG="$TWRP_DIR/out/target/product/twgeneric/vendor_boot.img"
+          CLEAN="${{ github.event.inputs.clean_build }}"
+
+          if [ "$CLEAN" = "yes" ]; then
+            echo "Clean build requested — wiping workspace."
+            sudo rm -rf "$TWRP_DIR" "$GITHUB_WORKSPACE/apt-cache"
+            echo "SKIP_BUILD=false" >> $GITHUB_ENV
+          elif [ -f "$IMG" ]; then
+            echo "Existing build found — skipping to upload."
+            echo "SKIP_BUILD=true" >> $GITHUB_ENV
+          else
+            echo "Starting fresh build."
+            sudo rm -rf "$TWRP_DIR" "$GITHUB_WORKSPACE/apt-cache"
+            echo "SKIP_BUILD=false" >> $GITHUB_ENV
+          fi
+
       - name: Maximize build space
+        if: env.SKIP_BUILD == 'false'
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 8192
@@ -27,6 +47,7 @@ jobs:
           remove-codeql: 'true'
 
       - name: Setup build environment
+        if: env.SKIP_BUILD == 'false'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -38,6 +59,7 @@ jobs:
             python-is-python3 rsync
 
       - name: Setup repo tool
+        if: env.SKIP_BUILD == 'false'
         run: |
           mkdir -p ~/bin
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
@@ -45,11 +67,13 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
 
       - name: Configure git
+        if: env.SKIP_BUILD == 'false'
         run: |
           git config --global user.email "build@github.com"
           git config --global user.name "GitHub Actions"
 
       - name: Init TWRP manifest
+        if: env.SKIP_BUILD == 'false'
         run: |
           mkdir -p $GITHUB_WORKSPACE/twrp
           cd $GITHUB_WORKSPACE/twrp
@@ -59,11 +83,13 @@ jobs:
             --depth=1
 
       - name: Sync sources
+        if: env.SKIP_BUILD == 'false'
         run: |
           cd $GITHUB_WORKSPACE/twrp
           repo sync -c -j$(nproc) --no-clone-bundle --no-tags --optimized-fetch --prune
 
       - name: Clone device tree
+        if: env.SKIP_BUILD == 'false'
         run: |
           cd $GITHUB_WORKSPACE/twrp
           git clone https://github.com/HackSucks/android_generic-TWRP.git \
@@ -77,6 +103,7 @@ jobs:
           echo "CUSTOM_BUILD_NAME=TWRP-Generic-13-${BUILD_DATE}" >> $GITHUB_ENV
 
       - name: Build TWRP
+        if: env.SKIP_BUILD == 'false'
         run: |
           cd $GITHUB_WORKSPACE/twrp
           export ALLOW_MISSING_DEPENDENCIES=true
@@ -87,7 +114,7 @@ jobs:
 
       - name: Locate build output
         run: |
-          IMG="$GITHUB_WORKSPACE/twrp/out/target/product/generic/vendor_boot.img"
+          IMG="$GITHUB_WORKSPACE/twrp/out/target/product/twgeneric/vendor_boot.img"
           if [ -f "$IMG" ]; then
             echo "Build output found: $IMG"
           else
@@ -97,7 +124,7 @@ jobs:
           fi
 
       - name: Upload build log
-        if: always()
+        if: always() && env.SKIP_BUILD == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: build-log-generic
@@ -107,4 +134,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.CUSTOM_BUILD_NAME }}
-          path: ${{ github.workspace }}/twrp/out/target/product/generic/vendor_boot.img
+          path: ${{ github.workspace }}/twrp/out/target/product/twgeneric/vendor_boot.img
