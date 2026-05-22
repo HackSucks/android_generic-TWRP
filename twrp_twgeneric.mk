@@ -16,7 +16,7 @@ $(call inherit-product, vendor/twrp/config/common.mk)
 $(call inherit-product, device/android/twgeneric/device.mk)
 
 PRODUCT_DEVICE := twgeneric
-PRODUCT_NAME := omni_twgeneric
+PRODUCT_NAME := twrp_twgeneric
 PRODUCT_BRAND := Android
 PRODUCT_MODEL := mainline
 PRODUCT_MANUFACTURER := android
