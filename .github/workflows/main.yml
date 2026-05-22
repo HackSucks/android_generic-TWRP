@@ -79,7 +79,7 @@ jobs:
           cd $GITHUB_WORKSPACE/twrp
           repo init \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
-            -b twrp-13 \
+            -b twrp-12.1 \
             --depth=1
 
       - name: Sync sources
