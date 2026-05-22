@@ -21,12 +21,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     bootctrl.vsoc_x86_64
 
-PRODUCT_STATIC_BOOT_CONTROL_HAL := \
-    bootctrl.vsoc_x86_64 \
-    libgptutils \
-    libz \
-    libcutils
-
 PRODUCT_PACKAGES += \
     otapreopt_script \
     cppreopts.sh \
